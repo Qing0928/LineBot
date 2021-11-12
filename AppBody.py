@@ -29,7 +29,7 @@ def handle_message(event):
         weather_url = 'https://api.openweathermap.org/data/2.5/weather?lat={}&lon={}&appid={}'
         lat = '23.696862531078384'
         lon = '120.53401536679688'
-        key = '9a836b11eab50c2d30df9f48bd9cc5c8'
+        key = 'YOUR API KEY'
         try:
             response = requests.get(weather_url.format(lat, lon, key))
             weather_json = response.json()
