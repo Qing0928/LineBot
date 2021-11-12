@@ -2,10 +2,10 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage, ImageSendMessage
 from flask import Flask, request, abort
-import json
 import requests
+import os
 
-app = Flask('LineBot')
+app = Flask(__name__)
 line_bot_api = LineBotApi('/xc+mRNnP4icof0RTWKH+SrCHu9Sw7G7quRLjLyIP0plaHELgO+Igr5wsDMkQXCtzMQCUK0JBCrcNiSfAFrfBl4G5C4lwMCmMmswiM9Y8R3cXMkiNZDQmmh3TgI6pmK/zf7Dz4iTtvds22VMenIYgAdB04t89/1O/w1cDnyilFU=')
 handler = WebhookHandler('a5fdce271d8905f7606b78abb74de110')
 
@@ -32,11 +32,11 @@ def handle_message(event):
         key = '9a836b11eab50c2d30df9f48bd9cc5c8'
         try:
             response = requests.get(weather_url.format(lat, lon, key))
-            weather_json = json(response)
+            weather_json = response.json()
             weather_des = weather_json['weather'][0]['description']
-            temp_now = (int(weather_json['main']['temp']) - 32) * 5/9
-            temp_max = (int(weather_json['main']['temp_max']) - 32) * 5/9
-            temp_min = (int(weather_json['main']['temp_min']) - 32) * 5/9
+            temp_now = round((int(weather_json['main']['temp']) - 273.15), 2)
+            temp_max = round((int(weather_json['main']['temp_max']) - 273.15), 2)
+            temp_min = round((int(weather_json['main']['temp_min']) - 273.15), 2)
             hum = weather_json['main']['humidity']
             line_bot_api.reply_message(
                 event.reply_token, 
@@ -55,4 +55,5 @@ def handle_message(event):
             print(e)
 
 if __name__ == '__main__':
-    app.run()
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
